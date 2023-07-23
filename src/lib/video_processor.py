@@ -24,7 +24,7 @@ def _video_to_frames(url, start, end, skipSeconds=1):
 
     count = start
 
-    while count < end or count > info["duration"]:  # while we are within the interval
+    while count < end or count < info["duration"]:  # while we are within the interval
         print(f"[{info['id']}] Extracting at {count}s")
         ret, frame = video.read()
         if not ret:
@@ -42,13 +42,12 @@ def extract(url):
     with YoutubeDL() as ydl:
         info = ydl.extract_info(url, download=False)
 
+    parallel = os.cpu_count()
+
     length = info.get("duration")
-    segment_length = int(length / os.cpu_count())
-    segments = [(i * segment_length, (i + 1) * segment_length) for i in range(os.cpu_count())]
+    segment_length = int(length / parallel)
+    segments = [(i * segment_length, (i + 1) * segment_length) for i in range(parallel)]
 
-    with Pool(os.cpu_count()) as pool:
-        for _ in segments:
-            pool.starmap(_video_to_frames, [(url, start, end, 5) for start, end in segments])
+    with Pool(parallel) as pool:
+        pool.starmap(_video_to_frames, [(url, start, end, 5) for start, end in segments])
 
-    pool.close()
-    pool.join()
