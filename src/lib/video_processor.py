@@ -4,7 +4,7 @@ from multiprocessing.pool import Pool
 import os
 import dotenv
 
-from src.lib.cloudinary_uploader import upload
+from src.lib.imgbb_uploader import upload
 from src.lib.db import write_image
 
 dotenv.load_dotenv()
