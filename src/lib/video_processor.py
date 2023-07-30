@@ -4,7 +4,7 @@ from multiprocessing.pool import Pool
 import os
 import dotenv
 
-from src.lib.imgbb_uploader import upload
+from src.lib.cloudflare_uploader import upload
 from src.lib.db import write_image
 
 dotenv.load_dotenv()
@@ -31,7 +31,7 @@ def _video_to_frames(url, start, end, skipSeconds=1):
             print(f"no video feed at {count}s")
             break
         frame_url = upload(info["id"], f"{count}", frame)
-        write_image(f"{info['id']}/{count}.jpg", frame_url)
+        write_image(info['id'], f"{count}.jpg", frame_url)
 
         # skip to next frame
         count += skipSeconds
